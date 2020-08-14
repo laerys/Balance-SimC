@@ -1,26 +1,23 @@
 ---
-name: Beta
-about: Create a report for Beta version
+name: Beta Bug
+about: Report a balance druid bug on the Shadowlands BETA version of SimC
 title: ''
-labels: 0-Beta
+labels: BETA, BUG
 assignees: ''
 
 ---
 
-**Game Version:**
-> 9.0.1 beta Build 35282 
+**SimC Build:**
+> Enter the SimC git build where you encountered the issue. The git build can be found in the SimulationCraft banner at the top of the HTML report.
 
 **Description:**
 > What is your bug about?
 
-**Details:**
-> Try to explain the bug.
+**Affected Spells:**
+> If applicable, list any affected spells, abilities, buff, debuffs, and/or effects.
 
-**Logs, Images, Videos**
-> Please attach Logs, Images, and/or a Video of the bug.
+**SimC Report:**
+> Attach any HTML reports (if run locally) or links to Raidbots.com.
 
-**Reproducible:**
-> Examples: yes/rarely
-
-**Howto:**
-> How do you reproduce it (if you know).
+**Logs, Images, Clips**
+> Attach any logs, imgages, or clips showing the discrepancy between SimC and in-game behavior.
