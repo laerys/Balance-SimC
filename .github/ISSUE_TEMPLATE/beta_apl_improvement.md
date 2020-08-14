@@ -1,5 +1,5 @@
 ---
-name: Beta APL improvement
+name: Beta APL Improvement
 about: Suggest an improvement to the Shadowlands Balance druid APL for the Shadowland BETA version of SimC
 title: ''
 labels: BETA, APL, Improvement
