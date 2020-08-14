@@ -1,6 +1,6 @@
 ---
 name: Beta Bug
-about: Report a balance druid bug with the Shadowlands BETA version of SimC
+about: Report a balance druid related bug with the Shadowlands BETA version of SimC
 title: ''
 labels: BETA, BUG
 assignees: ''
