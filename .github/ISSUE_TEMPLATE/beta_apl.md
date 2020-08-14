@@ -1,5 +1,5 @@
 ---
-name: Beta APL
+name: Beta APL issue
 about: Report an issue with the Balance druid APL for the Shadowland BETA version of SimC
 title: ''
 labels: BETA, APL
