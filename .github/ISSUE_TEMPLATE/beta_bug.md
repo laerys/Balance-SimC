@@ -1,6 +1,6 @@
 ---
 name: Beta Bug
-about: Report a balance druid bug on the Shadowlands BETA version of SimC
+about: Report a balance druid bug with the Shadowlands BETA version of SimC
 title: ''
 labels: BETA, BUG
 assignees: ''
@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **SimC Build:**
-> Enter the SimC git build where you encountered the issue. The git build can be found in the SimulationCraft banner at the top of the HTML report.
+> Enter the SimC git build where you encountered the bug. The git build can be found in the SimulationCraft banner at the top of the HTML report.
 
 **Description:**
 > What is your bug about?
