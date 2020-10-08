@@ -5,12 +5,12 @@
         <div id='content'></div>
         <script>
             var param = new URLSearchParams(window.location.search);
-            var filename = 'https://raw.githubusercontent.com/dreamgrove/dreamgrove/master/static/beta/' + param.get('file');
+            var filename = param.get('file');
             fetch(filename)
             .then(response => response.text())
             .then(text => {
                 let text2 = text;
-                if (param.get('file') == 'balance.txt') {
+                if (filename == 'balance.txt') {
                     const old_ = new RegExp('\nactions', 'g');
                     const new_ = '\n- actions';
                     const old2_ = new RegExp('\n####', 'g');

@@ -10,7 +10,7 @@
         title.textContent = str;
       }
       (async () => {
-        const response = await fetch('https://api.github.com/repos/dreamgrove/dreamgrove/contents/static/beta/');
+        const response = await fetch('https://api.github.com/repos/balance-simc/Balance-SimC/contents/');
         const data = await response.json();
         let htmlString = '<ul style=\"font-family:monospace; font-size:large;\">';
         for (let file of data) {
