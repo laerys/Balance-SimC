@@ -1,4 +1,4 @@
-## Shadowland BETA Balance Druid APL
+## Shadowland BETA Balance Druid APL [(changelog)](https://github.com/balance-simc/Balance-SimC/commits/master/balance.txt)
 
 ### Precast 2 wrath and a surge if below 4 targets
 actions.precombat=flask
