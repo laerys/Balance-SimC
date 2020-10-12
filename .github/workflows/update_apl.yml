@@ -23,4 +23,7 @@ jobs:
       - name: generate APL
         run: python generate_apl.py "./simc"
       - name: test
-        run: git diff
+        run: |
+          cd simc
+          git status
+          git diff
