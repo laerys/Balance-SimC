@@ -18,12 +18,14 @@ jobs:
       - name: checkout simc
         uses: actions/checkout@v2
         with:
-          repository: simulationcraft/simc
+          repository: gastank/simc
+          token: ${{ secrets.API_TOKEN_GITHUB }}
           path: './simc'
       - name: generate APL
         run: python generate_apl.py "./simc"
-      - name: test
+      - name: commmit APL
         run: |
           cd simc
-          git status
-          git diff
+          git add .
+          git commit -m "[Balance] update APL"
+          git push
