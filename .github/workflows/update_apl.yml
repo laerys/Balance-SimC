@@ -1,7 +1,9 @@
 name: Update APL
 
 on:
-  workflow_dispatch:
+  push:
+    paths:
+      - 'balance.txt'
 
 jobs:
   update:
