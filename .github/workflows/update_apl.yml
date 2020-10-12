@@ -26,6 +26,8 @@ jobs:
       - name: commmit APL
         run: |
           cd simc
+          git config user.name Balance-SimC
+          git config user.email Balance-Simc@github.com
           git add .
           git commit -m "[Balance] update APL"
           git push
