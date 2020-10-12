@@ -5,10 +5,6 @@ name: Generate Sims
 on:
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: static/beta
-
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -39,16 +35,18 @@ jobs:
         run: python generate_by_combo.py --target=-1 $APIKEY
       - name: talent sims
         run: python generate_by_talent.py $APIKEY
-      - name: update repo
-        run: git pull --rebase --autostash
       - name: commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: update sims
+        run: |
+          git config user.name Balance-SimC
+          git config user.email Balance-SimC@github.com
+          git pull --rebase --autostash
+          git add .
+          git commit -m "update sims"
+          git push
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: generate_sims
           path: |
-            static/beta/by_*.html
-            static/beta/*.js
+            by_*.html
+            *.js
