@@ -21,6 +21,9 @@ with open('balance.txt', 'r') as apl_file:
         pref = split_[0].rstrip('+')
         suf = split_[1].lstrip('/').rstrip('\n')
 
+        if suf == 'flask' or suf == 'food' or suf == 'augmentation' or suf == 'snapshot_stats':
+            continue
+
         pref_apl_ = pref.split('.')
         if len(pref_apl_) > 1:
             apl = pref_apl_[1]
