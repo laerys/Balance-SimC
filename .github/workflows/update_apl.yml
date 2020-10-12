@@ -20,7 +20,7 @@ jobs:
         with:
           repository: simulationcraft/simc
           path: './simc'
+      - name: generate APL
+        run: python generate_apl.py "./simc"
       - name: test
-        run: |
-          cd simc
-          ls
+        run: git diff
