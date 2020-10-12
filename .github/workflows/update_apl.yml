@@ -30,9 +30,12 @@ jobs:
           echo "[Balance] Update APL" > commit_msg
           echo >> commit_msg
           git log -1 --pretty=format:%B >> commit_msg
+          echo >> commit_msg
+          echo >> commit_msg
+          echo "Co-authored-by: Balance-SimC <Balance-SimC@github.com>" >> commit_msg
+          git config --global user.name $(git log -1 --format=%aN)
+          git config --global user.email $(git log -1 --format=%aE)
           cd simc
-          git config user.name Balance-SimC
-          git config user.email Balance-SimC@github.com
           git add .
           git commit -F ../commit_msg
           git push
