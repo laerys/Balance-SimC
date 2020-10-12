@@ -55,13 +55,20 @@ for line in cpp_old:
         state = 1
 
         for apl in apl_lists.keys():
-            cpp_new.write('  action_priority_list_t* ' + apl + ' = get_action_priority_list( \"' + apl + '\" );\n')
+            apl_var = apl
+            if apl_var == 'default':
+                apl_var = 'def'
+
+            cpp_new.write('  action_priority_list_t* ' + apl_var + ' = get_action_priority_list( \"' + apl + '\" );\n')
 
         for apl in apl_lists.keys():
-            cpp_new.write('\n')
+            apl_var = apl
+            if apl_var == 'default':
+                apl_var = 'def'
 
+            cpp_new.write('\n')
             for action in apl_lists[apl]:
-                cpp_new.write('  ' + apl + '->add_action( \"' + action + '\" );\n')
+                cpp_new.write('  ' + apl_var + '->add_action( \"' + action + '\" );\n')
 
 cpp_new.close()
 cpp_old.close()
