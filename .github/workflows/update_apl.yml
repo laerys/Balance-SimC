@@ -27,9 +27,12 @@ jobs:
         run: python generate_apl.py "./simc"
       - name: commmit APL
         run: |
+          echo "[Balance] Update APL" > commit_msg
+          echo >> commit_msg
+          git log -1 --pretty=format:%B >> commit_msg
           cd simc
           git config user.name Balance-SimC
           git config user.email Balance-SimC@github.com
           git add .
-          git commit -m "[Balance] update APL"
+          git commit -F ../commit_msg
           git push
