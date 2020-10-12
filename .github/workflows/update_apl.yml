@@ -20,7 +20,7 @@ jobs:
       - name: checkout simc
         uses: actions/checkout@v2
         with:
-          repository: gastank/simc
+          repository: simulationcraft/simc
           token: ${{ secrets.API_TOKEN_GITHUB }}
           path: './simc'
       - name: generate APL
@@ -28,8 +28,8 @@ jobs:
       - name: commmit APL
         run: |
           cd simc
-          git config user.name Balance-SimC
-          git config user.email Balance-Simc@github.com
+          git config user.name gastank
+          git config user.email Balance-SimC@github.com
           git add .
           git commit -m "[Balance] update APL"
           git push
