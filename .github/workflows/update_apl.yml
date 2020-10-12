@@ -1,0 +1,26 @@
+name: Update APL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: update python
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+      - uses: actions/checkout@v2
+      - name: checkout simc
+        uses: actions/checkout@v2
+        with:
+          repository: simulationcraft/simc
+          path: './simc'
+      - name: test
+        run: |
+          cd simc
+          ls
