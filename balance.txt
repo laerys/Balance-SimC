@@ -11,7 +11,8 @@ actions.precombat+=/starsurge,if=spell_targets.starfall<4
 actions.precombat+=/variable,name=convoke_desync,value=floor((interpolated_fight_remains-20)%120)>floor((interpolated_fight_remains-25-(10*talent.incarnation.enabled)-(4*conduit.precise_alignment.enabled))%180)
 
 ### Decide action list based on situation
-actions=variable,name=is_aoe,value=spell_targets.starfall>1
+actions=variable,name=is_aoe,value=spell_targets.starfall>1&(!talent.starlord.enabled|talent.stellar_drift.enabled)|spell_targets.starfall>2
+actions+=/variable,name=is_cleave,value=spell_targets.starfire>1
 actions+=/berserking,if=(!covenant.night_fae|!cooldown.convoke_the_spirits.up)&buff.ca_inc.up
 actions+=/potion,if=buff.ca_inc.up
 actions+=/use_items
@@ -82,8 +83,8 @@ actions.aoe+=/force_of_nature,if=ap_check
 #### Use frenzy on cd, this will automatically line up with ca
 actions.aoe+=/ravenous_frenzy,if=buff.ca_inc.up
 #### Use ca/inc on cd unless you can line it up with convoke without losing a cast
-actions.aoe+=/celestial_alignment,if=ap_check&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains%%180<22|cooldown.convoke_the_spirits.up|!covenant.night_fae)
-actions.aoe+=/incarnation,if=ap_check&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains%%180<32|cooldown.convoke_the_spirits.up|!covenant.night_fae)
+actions.aoe+=/celestial_alignment,if=(buff.starfall.up|astral_power>50)&!buff.solstice.up&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains%%180<22|cooldown.convoke_the_spirits.up|!covenant.night_fae)
+actions.aoe+=/incarnation,if=(buff.starfall.up|astral_power>50)&!buff.solstice.up&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains%%180<32|cooldown.convoke_the_spirits.up|!covenant.night_fae)
 #### Use on cd with starfall up and save for pulsar
 actions.aoe+=/kindred_spirits,if=interpolated_fight_remains<15|(buff.primordial_arcanic_pulsar.value<250|buff.primordial_arcanic_pulsar.value>=250)&buff.starfall.up&cooldown.ca_inc.remains>50
 #### Refresh flare on up to 3 targets without inc/ca being about to expire and not overcapping
@@ -113,7 +114,7 @@ actions.aoe+=/full_moon,if=(eclipse.in_any&cooldown.ca_inc.remains>50|(charges=2
 actions.aoe+=/warrior_of_elune
 actions.aoe+=/variable,name=starfire_in_solar,value=spell_targets.starfire>8+floor(mastery_value%20)+floor(buff.starsurge_empowerment.stack%4)
 #### Use wrath in solar eclipse or the last starfire wont fit into a ca/inc buff.
-actions.aoe+=/wrath,if=eclipse.lunar_next|eclipse.any_next|eclipse.in_solar&!variable.starfire_in_solar|buff.ca_inc.remains<action.starfire.execute_time&buff.ca_inc.remains<execute_time&buff.ca_inc.up|buff.ravenous_frenzy.up&spell_haste>0.6
+actions.aoe+=/wrath,if=eclipse.lunar_next|eclipse.any_next&variable.is_cleave|eclipse.in_solar&!variable.starfire_in_solar|buff.ca_inc.remains<action.starfire.execute_time&!variable.is_cleave&buff.ca_inc.remains<execute_time&buff.ca_inc.up|buff.ravenous_frenzy.up&spell_haste>0.6|!variable.is_cleave&buff.ca_inc.remains>execute_time
 #### Use starfire if in lunar eclipse, in solar eclipse on 4+ targets or to proc solar eclipse
 actions.aoe+=/starfire
 #### Fallthru
