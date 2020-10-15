@@ -1,0 +1,1 @@
+raid_events+=/adds,name=Trash,count=1,first=0,cooldown=999,duration=999,distance=15
