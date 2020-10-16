@@ -77,6 +77,9 @@ actions.st+=/run_action_list,name=fallthru
 ### AoE action list called on 2+ targets since starfall and starfire is always better there
 #### Use starfall if it is within pandemic(30% of base duration)
 actions.aoe=starfall,if=buff.starfall.refreshable&(!runeforge.lycaras_fleeting_glimpse.equipped|time%%45>buff.starfall.remains+2)
+### Use starsurge to keep the dreambinder buff up
+actions.aoe+=/variable,name=starfall_wont_fall_off,value=astral_power>80-(10*buff.timeworn_dreambinder.stack)-(buff.starfall.remains*3%spell_haste)-(dot.fury_of_elune.remains*5)&buff.starfall.up
+actions.aoe+=/starsurge,if=buff.timeworn_dreambinder.remains<2&variable.starfall_wont_fall_off
 #### Refresh sunfire unless ca/inc has less than 10secs remaining and you won't overcap asp
 actions.aoe+=/sunfire,target_if=refreshable&target.time_to_die>14-spell_targets+remains,if=ap_check&eclipse.in_any
 #### Use swarm until 9 targets on cd
