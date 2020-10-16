@@ -60,15 +60,15 @@ buffer = {}
 for cov in covs:
     for leg, bonus in legs.items():
         name = cov + ' - ' + leg
-        if args.targets == 0:
+
+        if spread_add == True:
+            target_str = 'target_error=0.1\ndesired_targets=1\n' + spread
+        elif args.targets == 0:
             target_str = 'target_error=0.2\n' + mplus + '\n' + move
         elif args.targets < 0:
             target_str = 'target_error=0.1\ndesired_targets=' + targets.strip('-') + '\n' + move
         else:
             target_str = 'target_error=0.1\ndesired_targets=' + targets
-
-        if spread_add == True:
-            target_str += '\n' + spread
 
         simc = profile + '\ntalents=0000000\ncovenant=' + cov + '\n\ntabard=,id=31405,bonus_id=' + str(bonus) + '\n\nname=\"' + name + '\"\n\n' + target_str + '\n\n' + sets
 
@@ -110,9 +110,11 @@ for cov in covs:
 
 sorted_buf = sorted(buffer.items(), key=lambda x: x[1], reverse=True)
 
-output = 'by_combo_' + targets
+output = 'by_combo_'
 if spread_add == True:
     output += 'S'
+else:
+    output += targets
 
 betabot = open(output + '.html', 'w')
 betabot.write('<html><style>body {margin-left:0; margin-right:0} a {color:#FF7D0A; text-decoration:none; font-family:monospace; font-size:large;}</style><body>\n')

@@ -1,3 +1,14 @@
+Oct 16:
+    * Changes from the October 15th build 9.0.2.36206 are included.
+        * Balance of All Things crit buff nerfed to 10% per stack
+        * Oneth's Clear Vision proc rate buffed to 20%/40% chance for free Starfall/Starsurge, respectively
+        * Timeworn Dreambinder cost reduction nerfed to 10%, added damage buff of 10% per stack
+        * Fury of the Skies conduit nerfed to 1/3 value
+        * Adaptive Swarm damage adjustment nerfed to +9%, debuff effect buffed to 30%
+        * Kindred Spirits pool transfer rate nerfed to 20%, pool consumption rate nerfed to 15%
+        * Ravenous Frenzy haste buff nerfed to 1% per stack, duration buffed to 20s
+    * APL updated to better utilize Adaptive Swarm & Timeworn Dreambinder
+
 Oct 8:
     * Changes from the October 7th build 9.0.2.36165 are included.
         * Adaptive Swarm damage increased by 22%
