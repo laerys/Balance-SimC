@@ -28,7 +28,8 @@ actions+=/run_action_list,name=prepatch_st
 
 ### Single target action list called when fighting 1 target. All action lists are mostly similar and can be combined but they are far easier to read when split up.
 #### Refresh dots unless ca/inc has less than 5 secs remaining, the venthyr buff or the kyrian buff is about to fall off to make sure all asp is spend in each
-actions.st=moonfire,target_if=refreshable&target.time_to_die>12,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
+actions.st=adaptive_swarm,target_if=!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>5)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3&dot.adaptive_swarm_damage.ticking
+actions.st+=/moonfire,target_if=refreshable&target.time_to_die>12,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
 actions.st+=/sunfire,target_if=refreshable&target.time_to_die>12,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
 actions.st+=/stellar_flare,target_if=refreshable&target.time_to_die>16,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
 #### Use FoN on cd without capping
@@ -47,11 +48,9 @@ actions.st+=/variable,name=save_for_ca_inc,value=(!cooldown.ca_inc.ready|!variab
 actions.st+=/convoke_the_spirits,if=variable.convoke_condition&astral_power<30
 #### Uses FoE if in an eclipse and tries to line it up with pulsar and adaptive swarm
 actions.st+=/fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pulsar.value<240&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord)&variable.save_for_ca_inc
-#### Use swarm on cd
-actions.st+=/adaptive_swarm,if=
 #### Use oneth starfall procs if starfall isn't up
 actions.st+=/starfall,if=buff.oneths_perception.up&buff.starfall.refreshable
-actions.st+=/cancel_buff,name=starlord,if=buff.starlord.remains<6&(buff.eclipse_solar.up|buff.eclipse_lunar.up)&astral_power>90
+actions.st+=/cancel_buff,name=starlord,if=buff.starlord.remains<5&(buff.eclipse_solar.remains>5|buff.eclipse_lunar.remains>5)&astral_power>90
 #### Dumps asp before convoke using the convoke condition to check if convoke is actually about to be cast
 actions.st+=/starsurge,if=covenant.night_fae&variable.convoke_condition&cooldown.convoke_the_spirits.remains<gcd.max*ceil(astral_power%30)
 #### Use starfall with stellar drift, when no starfall is up, you are in lunar eclipse, proc pulsar when above 90 asp or adpative swarm has 8+secs remaining or is in flight
@@ -80,6 +79,8 @@ actions.st+=/run_action_list,name=fallthru
 actions.aoe=starfall,if=buff.starfall.refreshable&(!runeforge.lycaras_fleeting_glimpse.equipped|time%%45>buff.starfall.remains+2)
 #### Refresh sunfire unless ca/inc has less than 10secs remaining and you won't overcap asp
 actions.aoe+=/sunfire,target_if=refreshable&target.time_to_die>14-spell_targets+remains,if=ap_check&eclipse.in_any
+#### Use swarm until 9 targets on cd
+actions.aoe+=/adaptive_swarm,target_if=!ticking&!action.adaptive_swarm_damage.in_flight|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3
 #### Refresh moonfire if ca/inc is ready or there are less than 3 targets or less than 10 and you are in any eclipse. Dont Moonfire in Lunar Eclipse with sotf and don't use Moonfire if the lack in Astral Power will not allow you to keep up Starfall. Don't refresh during kindred empowerment and don't overcap asp
 actions.aoe+=/moonfire,target_if=refreshable&target.time_to_die>(14+(spell_targets.starfire*1.5))%spell_targets+remains,if=(cooldown.ca_inc.ready|spell_targets.starfire<3|(eclipse.in_solar|eclipse.in_both|eclipse.in_lunar&!talent.soul_of_the_forest.enabled)&(spell_targets.starfire<10*(1+talent.twin_moons.enabled))&astral_power>50-buff.starfall.remains*6)&!buff.kindred_empowerment_energize.up&ap_check
 #### Use fon on cd without capping
@@ -99,8 +100,6 @@ actions.aoe+=/variable,name=convoke_condition,value=buff.primordial_arcanic_puls
 actions.aoe+=/convoke_the_spirits,if=variable.convoke_condition&astral_power<50
 #### Uses FoE if inside an eclipse(eclipse.in_any) and lines it up with a pulsar proc and adaptive swarm
 actions.aoe+=/fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pulsar.value<250&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord|spell_targets>2)
-#### Use swarm until 9 targets on cd
-actions.aoe+=/adaptive_swarm,target_if=!ticking,if=spell_targets.starfall<9
 #### Use an oneth proc unless starfall is already up or you are about to overcap asp
 actions.aoe+=/starfall,if=buff.oneths_perception.up&(buff.starfall.refreshable|astral_power>90)
 #### Dump asp before convoke with starfall and then starsurge
@@ -126,40 +125,34 @@ actions.aoe+=/run_action_list,name=fallthru
 
 ### Special action list for dreambinder. Has a lot of similarities but also a lot of extra checks for dreambinder. Biggest difference is the moving of starsurge/starfall much higher in the action list and every action making sure that the buff won't fall off
 #### Calculates whether starsurge/starfall will have to be used to keep up the buff. Uses the gcd during solar eclipse and the starfire execute time during lunar eclipse and the relevant cast for the next eclipse depending on st/aoe. Also returns true if the buff isn't up
-actions.dreambinder=variable,name=safe_to_use_spell,value=(buff.timeworn_dreambinder.remains>gcd.max&!eclipse.in_lunar&!eclipse.solar_next&!eclipse.any_next|buff.timeworn_dreambinder.remains>action.starfire.execute_time&(spell_targets.starfire>1|eclipse.in_lunar|eclipse.solar_next|eclipse.any_next))|!buff.timeworn_dreambinder.up
+actions.dreambinder=variable,name=safe_to_use_spell,value=(buff.timeworn_dreambinder.remains>gcd.max+0.1&(eclipse.in_both|eclipse.in_solar|eclipse.lunar_next)|buff.timeworn_dreambinder.remains>action.starfire.execute_time+0.1&(eclipse.in_lunar|eclipse.solar_next|eclipse.any_next))|!buff.timeworn_dreambinder.up
 #### Use starsurge if dreambinder is about to fall off or we are fighting 1 target and are in solar eclipse or the venthyr buff is about to fall off. With 2+ targets use when starfall wouldn't fall off and dump when at 90+asp at all times. Line can use some clean up :)
-actions.dreambinder+=/starsurge,if=(!variable.safe_to_use_spell|((buff.eclipse_solar.remains<gcd.max&buff.eclipse_solar.up)|(buff.ravenous_frenzy.remains<gcd.max*ceil(astral_power%30)&buff.ravenous_frenzy.up)))&(buff.eclipse_solar.up|eclipse.solar_next|eclipse.any_next)|astral_power>90
-#### Refresh moonfire on 5 or less targets or 11 or less with tm(Rough numbers, needs more testing) and kindred isn't up
-actions.dreambinder+=/moonfire,target_if=refreshable&target.time_to_die>16,if=!buff.kindred_empowerment_energize.up
-#### Refresh sunfire when kindred isn't up
-actions.dreambinder+=/sunfire,target_if=refreshable&target.time_to_die>16,if=!buff.kindred_empowerment_energize.up
-#### Refresh stellar flare on less than 3 targets, ca/inc isn't about to fall off, you won't overcap asp and kindred isn't up (rough estimates)
-actions.dreambinder+=/stellar_flare,target_if=refreshable&target.time_to_die>16,if=(buff.ca_inc.remains>10|!buff.ca_inc.up)&ap_check&!buff.kindred_empowerment_energize.up
-#### Use frenzy on cd before ca/inc without dropping dreambinder including the ca/inc cast in the following gcd
-actions.dreambinder+=/ravenous_frenzy,if=astral_power<70&(buff.timeworn_dreambinder.remains>gcd.max*2|!buff.timeworn_dreambinder.up)
-#### Use ca/inc with convoke unless losing a use and dreambinder won't fall off
-actions.dreambinder+=/celestial_alignment,if=ap_check&!buff.ca_inc.up&(buff.timeworn_dreambinder.remains>gcd.max|!buff.timeworn_dreambinder.up)&ap_check&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains%%180<22|cooldown.convoke_the_spirits.up|!covenant.night_fae)
-actions.dreambinder+=/incarnation,if=ap_check&!buff.ca_inc.up&(buff.timeworn_dreambinder.remains>gcd.max|!buff.timeworn_dreambinder.up)&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains%%180<32|cooldown.convoke_the_spirits.up|!covenant.night_fae)
+actions.dreambinder+=/starsurge,if=(!variable.safe_to_use_spell|(buff.ravenous_frenzy.remains<gcd.max*ceil(astral_power%30)&buff.ravenous_frenzy.up))|astral_power>90
+actions.dreambinder+=/adaptive_swarm,target_if=!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>5)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3&dot.adaptive_swarm_damage.ticking
+actions.dreambinder+=/moonfire,target_if=refreshable&target.time_to_die>12,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
+actions.dreambinder+=/sunfire,target_if=refreshable&target.time_to_die>12,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
+actions.dreambinder+=/stellar_flare,target_if=refreshable&target.time_to_die>16,if=(buff.ca_inc.remains>5&(buff.ravenous_frenzy.remains>5|!buff.ravenous_frenzy.up)|!buff.ca_inc.up|astral_power<30)&(!buff.kindred_empowerment_energize.up|astral_power<30)&ap_check
 #### Use trees on cd without capping
 actions.dreambinder+=/force_of_nature,if=ap_check
-#### Use kindred with a dreambinder buff in solar in st or lunar in aoe while also requiring a starfall there. Save for pulsar try to line up with ca/inc without losing a use
-actions.dreambinder+=/kindred_spirits,if=buff.timeworn_dreambinder.remains>gcd.max&(floor((interpolated_fight_remains-10)%cooldown)>floor((interpolated_fight_remains-10-cooldown.ca_inc.remains)%cooldown)&(eclipse.in_solar|eclipse.solar_next|buff.ca_inc.remains>10|buff.primordial_arcanic_pulsar.value>=270&astral_power>50))
-#### Same as in the other action lists, calculates whether convoke can be saved for ca/inc or a pulsar proc without losing a use
-actions.dreambinder+=/variable,name=convoke_condition,value=buff.primordial_arcanic_pulsar.value<240&(cooldown.ca_inc.remains+10>interpolated_fight_remains|cooldown.ca_inc.remains+30<interpolated_fight_remains&interpolated_fight_remains>130|interpolated_fight_remains%%120<15|buff.ca_inc.remains>7)&eclipse.in_any
+#### Use frenzy on cd before ca/inc without dropping dreambinder including the ca/inc cast in the following gcd
+actions.dreambinder+=/ravenous_frenzy,if=buff.ca_inc.up
+actions.dreambinder+=/kindred_spirits,if=((buff.eclipse_solar.remains>10|buff.eclipse_lunar.remains>10)&cooldown.ca_inc.remains>30)|cooldown.ca_inc.ready
+#### Use ca/inc with convoke unless losing a use and dreambinder won't fall off
+actions.dreambinder+=/celestial_alignment,if=(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|variable.is_aoe|buff.bloodlust.up&buff.bloodlust.remains<20+(4*conduit.precise_alignment.enabled)&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains<22|interpolated_fight_remains%%180<22|cooldown.convoke_the_spirits.up|!covenant.night_fae)
+actions.dreambinder+=/incarnation,if=(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|variable.is_aoe|buff.bloodlust.up&buff.bloodlust.remains<30+(4*conduit.precise_alignment.enabled)&!buff.ca_inc.up&(interpolated_fight_remains<cooldown.convoke_the_spirits.remains+7|interpolated_fight_remains<32|interpolated_fight_remains%%180<32|cooldown.convoke_the_spirits.up|!covenant.night_fae)
+#### Calculates if convoke can be used with ca/inc or pulsar without losing a use
+actions.dreambinder+=/variable,name=convoke_condition,value=covenant.night_fae&(buff.primordial_arcanic_pulsar.value<240&(cooldown.ca_inc.remains+10>interpolated_fight_remains|cooldown.ca_inc.remains+30<interpolated_fight_remains&interpolated_fight_remains>130|buff.ca_inc.remains>7)&buff.eclipse_solar.remains>10|interpolated_fight_remains%%120<15)
+actions.dreambinder+=/variable,name=save_for_ca_inc,value=(!cooldown.ca_inc.ready|!variable.convoke_condition&covenant.night_fae)
 #### Also the same but with a check that dreambinder won't fall off in the 4 sec channel
-actions.dreambinder+=/convoke_the_spirits,if=variable.convoke_condition&(astral_power<50&variable.is_aoe|astral_power<30)&(buff.timeworn_dreambinder.remains>execute_time|!buff.timeworn_dreambinder.up)
+actions.dreambinder+=/convoke_the_spirits,if=variable.convoke_condition&astral_power<40
 #### Use FoE during any eclipse, dreambinder won't fall off(check shouldn't be needed) and only with adaptive swarm if used
-actions.dreambinder+=/fury_of_elune,if=eclipse.in_any&ap_check&variable.safe_to_use_spell&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord|spell_targets>2)
-#### Use swarm on up to 8 targets on cd
-actions.dreambinder+=/adaptive_swarm,if=
-#### Make sure you are able to use ca/inc when it's up by dumping asp until 70 without convoke
-actions.dreambinder+=/starsurge,if=!covenant.night_fae&cooldown.ca_inc.ready&astral_power>70
-#### Dump asp before convoke with starsurge in st
-actions.dreambinder+=/starsurge,if=covenant.night_fae&variable.convoke_condition&astral_power>=30&cooldown.convoke_the_spirits.remains<gcd.max*ceil(astral_power%30)
+actions.dreambinder+=/fury_of_elune,if=eclipse.in_any&ap_check&(dot.adaptive_swarm_damage.ticking|!covenant.necrolord)&variable.save_for_ca_inc
+#### Dump asp before convoke with starsurge
+actions.dreambinder+=/starsurge,if=covenant.night_fae&variable.convoke_condition&astral_power>=40&cooldown.convoke_the_spirits.remains<gcd.max*ceil(astral_power%30)
 #### Use moons without losing the dreambinder buff
-actions.dreambinder+=/new_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_time<5)|charges=3)&ap_check
-actions.dreambinder+=/half_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_time<5)|charges=3)&ap_check&(buff.timeworn_dreambinder.remains>execute_time|!buff.timeworn_dreambinder.up)
-actions.dreambinder+=/full_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_time<5)|charges=3)&ap_check&(buff.timeworn_dreambinder.remains>execute_time|!buff.timeworn_dreambinder.up)
+actions.dreambinder+=/new_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_time<5)|charges=3)&ap_check&variable.save_for_ca_inc
+actions.dreambinder+=/half_moon,if=(buff.eclipse_lunar.up&!covenant.kyrian|(buff.kindred_empowerment_energize.up&covenant.kyrian)|(charges=2&recharge_time<5)|charges=3|buff.ca_inc.up)&ap_check&variable.save_for_ca_inc
+actions.dreambinder+=/full_moon,if=(buff.eclipse_lunar.up&!covenant.kyrian|(buff.kindred_empowerment_energize.up&covenant.kyrian)|(charges=2&recharge_time<5)|charges=3|buff.ca_inc.up)&ap_check&variable.save_for_ca_inc
 #### Use WoE on cd
 actions.dreambinder+=/warrior_of_elune
 #### Use starfire to proc solar eclipse, ca/inc has less time than a wrath execute left or only lunar eclipse is up
@@ -168,6 +161,7 @@ actions.dreambinder+=/starfire,if=eclipse.in_lunar|eclipse.solar_next|eclipse.an
 actions.dreambinder+=/wrath
 #### Fallthru
 actions.dreambinder+=/run_action_list,name=fallthru
+
 
 ### Special action list for Balance of All Things (BoAT)
 #### Frenzy with ca/inc
@@ -178,6 +172,7 @@ actions.boat+=/variable,name=critnotup,value=!buff.balance_of_all_things_nature.
 actions.boat+=/cancel_buff,name=starlord,if=buff.starlord.remains<15&(buff.balance_of_all_things_nature.remains>4.5|buff.balance_of_all_things_arcane.remains>4.5)&astral_power>=60&(cooldown.ca_inc.remains>7|(cooldown.empower_bond.remains>7&!buff.kindred_empowerment_energize.up&covenant.kyrian))
 #### Dump starsurges with the crit buff and before using convoke
 actions.boat+=/starsurge,if=!variable.critnotup&((!cooldown.convoke_the_spirits.up|!variable.convoke_condition|!covenant.night_fae)&(covenant.night_fae|(cooldown.ca_inc.remains>7|(cooldown.empower_bond.remains>7&!buff.kindred_empowerment_energize.up&covenant.kyrian))))|(cooldown.convoke_the_spirits.up&cooldown.ca_inc.ready&covenant.night_fae)
+actions.boat+=/adaptive_swarm,target_if=!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>5)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<3&dot.adaptive_swarm_damage.ticking
 #### Sunfire when the crit buff isn't up, you won't overcap or ca/inc is about to be used
 actions.boat+=/sunfire,target_if=refreshable&target.time_to_die>16,if=ap_check&(variable.critnotup|(astral_power<30&!buff.ca_inc.up)|cooldown.ca_inc.ready)
 #### Moonfire when the crit buff isn't up, you won't overcap or ca/inc is about to be used and the kindred buff isn't up
@@ -195,8 +190,6 @@ actions.boat+=/celestial_alignment,if=(astral_power>90&(buff.kindred_empowerment
 actions.boat+=/incarnation,if=(astral_power>90&(buff.kindred_empowerment_energize.up|!covenant.kyrian)|covenant.night_fae|buff.bloodlust.up&buff.bloodlust.remains<30+(4*conduit.precise_alignment.enabled))&(!covenant.night_fae|cooldown.convoke_the_spirits.up|variable.convoke_desync&interpolated_fight_remains>180+20+(4*conduit.precise_alignment.enabled)|interpolated_fight_remains<cooldown.convoke_the_spirits.remains+6|interpolated_fight_remains<30+(4*conduit.precise_alignment.enabled))
 #### Use convoke depending on sync up with ca/inc on cd or by waiting together with a crit buff
 actions.boat+=/convoke_the_spirits,if=(variable.convoke_desync&interpolated_fight_remains>130|buff.ca_inc.up)&(buff.balance_of_all_things_nature.stack_value>30|buff.balance_of_all_things_arcane.stack_value>30)|interpolated_fight_remains<10
-#### Use swarm on cd
-actions.boat+=/adaptive_swarm,if=
 #### Extra line for starsurge dump with convoke
 actions.boat+=/starsurge,if=covenant.night_fae&(variable.convoke_desync|cooldown.ca_inc.remains<10)&astral_power>50&cooldown.convoke_the_spirits.remains<10
 #### Dump starsurges when the fight is about to end, frenzy is about to end, you are at 90+ asp in an eclipse or ca/inc lasts another 8+secs
