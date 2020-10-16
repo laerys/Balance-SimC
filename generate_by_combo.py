@@ -15,7 +15,7 @@ post_url = 'https://mimiron.raidbots.com/sim'
 get_url = 'https://mimiron.raidbots.com/api/job/'
 report_url = 'https://mimiron.raidbots.com/simbot/report/'
 
-profile = apl = sets = mplus = move = spread = ""
+profile = sets = mplus = move = spread = ""
 
 covs = []
 legs = {}
@@ -42,9 +42,6 @@ with open('leg_x_cov.txt', 'r') as fp:
 
 with open('sandbag.txt', 'r') as fp:
     profile = fp.read()
-
-with open('balance.txt', 'r') as fp:
-    apl = fp.read()
 
 with open('talent_profiles.txt', 'r') as fp:
     sets = fp.read()
@@ -73,7 +70,7 @@ for cov in covs:
         if spread_add == True:
             target_str += '\n' + spread
 
-        simc = profile + '\ntalents=0000000\ncovenant=' + cov + '\n\ntabard=,id=31405,bonus_id=' + str(bonus) + '\n\nname=\"' + name + '\"\n\n' + target_str + '\n\n' + apl + sets
+        simc = profile + '\ntalents=0000000\ncovenant=' + cov + '\n\ntabard=,id=31405,bonus_id=' + str(bonus) + '\n\nname=\"' + name + '\"\n\n' + target_str + '\n\n' + sets
 
         while True:
             time.sleep(5) 
